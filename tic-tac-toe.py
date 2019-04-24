@@ -5,25 +5,19 @@ import os
 def welcome_screen():
     os.system('clear')
     print('\n- - - - - - - - - - - - -')
-    print('- - - - - - - - - - - - -')
     print(' Welcome to Tic-Tac-Toe!')
     print('- - - - - - - - - - - - -')
-    print('- - - - - - - - - - - - -')
+
+def print_board(board):
+    for row in board:
+        print('+---+---+---+')
+        print(f'| {row[0]} | {row[1]} | {row[2]} |')
+    print('+---+---+---+')
 
 def collect_player_names():
     p1 = input('\nEnter name of Player 1: ')
     p2 = input('Enter name of Player 2: ')
     return [(p2, 'O'),(p1, 'X')]
-
-def print_board(board):
-    print('\n- - - - - - - - - - - - -')
-    print(' Welcome to Tic-Tac-Toe!')
-    print('- - - - - - - - - - - - -')
-
-    for row in board:
-        print('+---+---+---+')
-        print(f'| {row[0]} | {row[1]} | {row[2]} |')
-    print('+---+---+---+')
 
 def check_for_win(board):
     wins = [['X', 'X', 'X'], ['O', 'O', 'O']]
@@ -34,17 +28,15 @@ def check_for_win(board):
     for i in range(3):
         col = [board[0][i], board[1][i], board[2][i]]
         row = [board[i][0], board[i][1], board[i][2]]
-
         if col in wins or row in wins or top_to_bottom in wins or bottom_to_top in wins:
             return False
-
     return True
 
-def guess(turn, players, board):
+def guess(turn, player, board):
     os.system('clear')
     print_board(board)
 
-    player, mark = players[turn % 2][0], players[turn % 2][1]
+    player, mark = player[0], player[1]
 
     try:
         # ask current player for their desired postion
@@ -59,12 +51,12 @@ def guess(turn, players, board):
         position = (choice - (line * 3)) - 1
 
         # check to see if the position has already been played
-        # if not then play the move
         if board[line][position] in ['X', 'O']:
             print(f'Sorry position {str(choice)} has already been played. Try again.')
-            guess(turn, players, board)
+            guess(turn, player, board)
         else:
-            board[line][position] = mark
+            return(line, position)
+            # board[line][position] = mark
 
     # exit on ctrl+c
     except KeyboardInterrupt:
@@ -73,7 +65,7 @@ def guess(turn, players, board):
     # input was not a valid number
     except:
         print('\nInvalid choice...')
-        guess(turn, players, board)
+        guess(turn, player, board)
 
     return board
 
@@ -94,19 +86,29 @@ def main():
     while True:
         turn += 1
 
-        ans = guess(turn, players, board)
+        # calculate the current player
+        player = players[turn % 2]
 
+        # prompt the current player for their next move
+        # return tuple (line, column) of choice
+        choice = guess(turn, player, board)
+
+        # add the current players mark to their desired position
+        board[choice[0]][choice[1]] = player[1]
+
+        # check to see if the current player has won or if scratch game
         if check_for_win(board) is False:
-            player = players[turn % 2][0]
-            print('\n* * * * * * * * * *')
-            print(f'Game Over! {player.upper()} WINS!!!')
-            print('* * * * * * * * * * *')
+            os.system('clear')
+            print('\n* * * * * * * * * * * * * *')
+            print(f'Game Over! {player[0].upper()} WINS!!!')
+            print('* * * * * * * * * * * * * *')
+            print_board(board)
+            print('\n')
             break
-
-        # last turn, scratch game
-        if turn == 9:
+        elif turn == 9:
             print('Scratch... Game Over!')
             break
 
 # run main program
-main()
+if __name__ == '__main__':
+    main()
