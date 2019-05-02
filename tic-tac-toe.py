@@ -41,8 +41,6 @@ def guess(turn, player, board):
     os.system('clear')
     print_board(board)
 
-    player, mark = player[0], player[1]
-
     try:
         # ask current player for their desired postion
         choice = int(
@@ -63,7 +61,6 @@ def guess(turn, player, board):
             guess(turn, player, board)
         else:
             return(line, position)
-            # board[line][position] = mark
 
     # exit on ctrl+c
     except KeyboardInterrupt:
