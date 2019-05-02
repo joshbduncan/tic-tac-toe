@@ -1,2 +1,3 @@
-# tic-tac-toe
-Python Tic-Tac-Toe Game
+# Python Tic-Tac-Toe
+
+This is my first attempt at a game while learning Python...
