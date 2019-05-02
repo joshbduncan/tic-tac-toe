@@ -2,11 +2,13 @@
 
 import os
 
+
 def welcome_screen():
     os.system('clear')
     print('\n- - - - - - - - - - - - -')
     print(' Welcome to Tic-Tac-Toe!')
     print('- - - - - - - - - - - - -')
+
 
 def print_board(board):
     for row in board:
@@ -14,10 +16,12 @@ def print_board(board):
         print(f'| {row[0]} | {row[1]} | {row[2]} |')
     print('+---+---+---+')
 
+
 def collect_player_names():
     p1 = input('\nEnter name of Player 1: ')
     p2 = input('Enter name of Player 2: ')
-    return [(p2, 'O'),(p1, 'X')]
+    return [(p2, 'O'), (p1, 'X')]
+
 
 def check_for_win(board):
     wins = [['X', 'X', 'X'], ['O', 'O', 'O']]
@@ -32,6 +36,7 @@ def check_for_win(board):
             return False
     return True
 
+
 def guess(turn, player, board):
     os.system('clear')
     print_board(board)
@@ -40,7 +45,8 @@ def guess(turn, player, board):
 
     try:
         # ask current player for their desired postion
-        choice = int(input(f'\n{player} which position would you like to mark? (1-9): '))
+        choice = int(
+            input(f'\n{player} which position would you like to mark? (1-9): '))
 
         # check for an input 0
         if choice == 0:
@@ -52,7 +58,8 @@ def guess(turn, player, board):
 
         # check to see if the position has already been played
         if board[line][position] in ['X', 'O']:
-            print(f'Sorry position {str(choice)} has already been played. Try again.')
+            print(
+                f'Sorry position {str(choice)} has already been played. Try again.')
             guess(turn, player, board)
         else:
             return(line, position)
@@ -69,8 +76,9 @@ def guess(turn, player, board):
 
     return board
 
+
 def main():
-    board = [['1','2','3'],['4','5','6'],['7','8','9']]
+    board = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']]
 
     # Welcome Screen
     welcome_screen()
@@ -108,6 +116,7 @@ def main():
         elif turn == 9:
             print('Scratch... Game Over!')
             break
+
 
 # run main program
 if __name__ == '__main__':
