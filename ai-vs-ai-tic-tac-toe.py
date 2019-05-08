@@ -65,10 +65,11 @@ def check_for_win(board, player):
 def main():
     players = [('O', 'O'), ('X', 'X')]
     turn = 0
+    starting_pos = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0}
     wins = {'X': 0, 'O': 0, 'TIES': 0}
 
     # start game
-    for _ in range(5):
+    for _ in range(200):
 
         i = random.randint(0, 8)
 
@@ -94,12 +95,15 @@ def main():
             if check_for_win(board, player[1]) is True:
                 # print(f'Game Over! {player[0].upper()} WINS!!!')
                 wins[player[1]] += 1
+                starting_pos[i] += 1
                 print(wins)
+                print(starting_pos)
                 break
             elif turn == 9:
                 wins['TIES'] += 1
                 # print('Scratch... Game Over!')
                 print(wins)
+                print(starting_pos)
                 break
 
 
