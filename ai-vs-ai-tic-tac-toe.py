@@ -68,7 +68,7 @@ def main():
     wins = {'X': 0, 'O': 0, 'TIES': 0}
 
     # start game
-    for _ in range(500):
+    for _ in range(5):
 
         i = random.randint(0, 8)
 
