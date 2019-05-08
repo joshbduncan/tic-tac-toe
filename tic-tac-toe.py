@@ -32,7 +32,7 @@ def check_for_win(board, player):
             board[1] == player and board[4] == player and board[7] == player or \
             board[2] == player and board[5] == player and board[8] == player or \
             board[0] == player and board[4] == player and board[8] == player or \
-            board[2] == player and board[1] == player and board[6] == player:
+            board[2] == player and board[4] == player and board[6] == player:
         return True
     else:
         return False
@@ -43,7 +43,6 @@ def guess(turn, player, board):
     print_board(board)
 
     while True:
-
         try:
             # ask current player for their desired postion
             choice = int(

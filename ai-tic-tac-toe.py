@@ -61,14 +61,15 @@ def check_for_win(board, player):
             board[1] == player and board[4] == player and board[7] == player or \
             board[2] == player and board[5] == player and board[8] == player or \
             board[0] == player and board[4] == player and board[8] == player or \
-            board[2] == player and board[1] == player and board[6] == player:
+            board[2] == player and board[4] == player and board[6] == player:
         return True
     else:
         return False
 
 
 def main():
-    board = ['O', 1, 'X', 'X', 4, 'X', 6, 'O', 'O']
+    # board = ['O', 1, 'X', 'X', 4, 'X', 6, 'O', 'O']
+    board = [0, 1, 2, 3, 'X', 5, 6, 'O', 8]
     # print_board(board)
     play_out(board, 'X')
     print(f'Move = {move}')
