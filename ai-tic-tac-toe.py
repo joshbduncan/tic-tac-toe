@@ -69,7 +69,7 @@ def check_for_win(board, player):
 
 def main():
     # board = ['O', 1, 'X', 'X', 4, 'X', 6, 'O', 'O']
-    board = [0, 1, 2, 3, 'X', 5, 6, 'O', 8]
+    board = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     # print_board(board)
     play_out(board, 'X')
     print(f'Move = {move}')
