@@ -46,9 +46,9 @@ def guess(turn, player, board):
         try:
             # ask current player for their desired postion
             choice = int(
-                input(f'\n{player[0]} which position would you like to mark? (0-8): '))
+                input(f'\n{player[0]} ({player[1]}) which position would you like to mark? (0-8): '))
 
-            # check for an input 0
+            # check for a valid input position
             if choice < 0 or choice > 8:
                 print(f'Invalid choice. Please choose a position between 0 and 8...')
                 time.sleep(2)
@@ -78,7 +78,7 @@ def guess(turn, player, board):
 def main():
     board = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
-    # Welcome Screen
+    # welcome screen
     welcome_screen()
 
     # collect player names
