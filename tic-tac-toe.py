@@ -2,6 +2,7 @@
 
 import os
 import time
+import copy
 
 
 def welcome_screen():
@@ -19,9 +20,110 @@ def print_board(board):
 
 
 def collect_player_names():
-    p1 = input('\nEnter name of Player 1: ')
-    p2 = input('Enter name of Player 2: ')
+    while True:
+        p1 = input('\nEnter name of Player 1: ')
+        if p1 == '':
+            print('Invalid player name. Please try again.')
+            continue
+        else:
+            break
+    while True:
+        p2 = input('Enter name of Player 2: ')
+        if p2 == '':
+            print('Invalid player name. Please try again.')
+            continue
+        else:
+            break
     return [(p2, 'O'), (p1, 'X')]
+
+
+def get_branches(board, player):
+    # get all possible plays for the current board and player
+    branches = []
+    for pos in range(9):
+        if board[pos] not in ['X', 'O']:
+            branches.append((pos, copy.deepcopy(board)))
+            branches[-1][1][pos] = player
+    return branches
+
+
+def solve(board, player, score):
+    # play out the current board and calculate draw, wins, and losses
+    if check_for_win(board, 'X'):
+        score -= 10
+        return score
+    if check_for_win(board, 'O'):
+        score += 10
+        return score
+
+    # get all possible branches for current board
+    branches = get_branches(board, player)
+
+    # play out the entire board from passed board
+    for _, branch in branches:
+        if player == 'X':
+            return solve(branch, 'O', score)
+        else:
+            return solve(branch, 'X', score)
+
+    # return the score for the played position
+    return score
+
+
+def ai_play(board, player):
+    scores = {}
+    branches = get_branches(board, player)
+
+    # calculate win/loss score for each possible position
+    for branch in branches:
+        answer = solve(branch[1], 'O', 0)
+        # add position score to scores
+        scores[branch[0]] = answer
+
+    # keep up with draw spots, win spots, and lose spots
+    spots_to_play = set()
+    winners = set()
+    losers = set()
+
+    # iterate through available positions
+    for k, v in scores.items():
+        # if the position matches the max update board
+        if v == max(scores.values()):
+            board[k] = 'O'
+
+            # check to see if this is now a winning board
+            if check_for_win(board, 'O'):
+                winners.add(k)
+
+            # check to see if this position creates a win for opponent
+            lose_branches = get_branches(board, 'X')
+            for x_branch in lose_branches:
+                # if position does create loss, add it to losers
+                if check_for_win(x_branch[1], 'X'):
+                    losers.add(x_branch[0])
+                    break
+                # ...if now, add it draw spots
+                else:
+                    spots_to_play.add(k)
+                    board[k] = k
+
+        # reset board
+        board[k] = k
+
+    # print statistics for AI suggestion
+    print('spots', spots_to_play)
+    print('winners', winners)
+    print('losers', losers)
+
+    # suggest optimila play
+    if len(winners) > 0:
+        print(f'PLAY POSITION {list(winners)[0]}')
+    elif len(losers) > 0:
+        print(f'BLOCK POSITION {list(losers)[0]}')
+    else:
+        print(f'BEST PLAY IS {min(spots_to_play)}')
+
+    return board
 
 
 def check_for_win(board, player):
@@ -43,6 +145,8 @@ def guess(turn, player, board):
     print_board(board)
 
     while True:
+        if player[1] == 'O':
+            ai_play(copy.deepcopy(board), 'O')
         try:
             # ask current player for their desired postion
             choice = int(
