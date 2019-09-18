@@ -121,7 +121,10 @@ def ai_play(board, player):
     elif len(losers) > 0:
         print(f'BLOCK POSITION {list(losers)[0]}')
     else:
-        print(f'BEST PLAY IS {min(spots_to_play)}')
+        if 4 in spots_to_play:
+            print(f'BEST PLAY IS 4')
+        else:
+            print(f'BEST PLAY IS {min(spots_to_play)}')
 
     return board
 
