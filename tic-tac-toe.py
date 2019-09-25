@@ -1,228 +1,207 @@
-#!/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
-
 import os
-import time
-import copy
 
 
-def welcome_screen():
-    os.system('clear')
-    print('\n- - - - - - - - - - - - -')
-    print(' Welcome to Tic-Tac-Toe!')
-    print('- - - - - - - - - - - - -')
+class Game:
+    def __init__(self):
+        self.start_game()
 
+    def start_game(self):
+        self.board = [[' ', ' ', ' '],
+                      [' ', ' ', ' '],
+                      [' ', ' ', ' ']]
 
-def print_board(board):
-    for i in range(0, 9, 3):
+        # player 'X' goes first
+        self.player_turn = 'X'
+
+    # game welcome screen
+    def welcome_screen(self):
+        os.system('clear')
+        print('\n- - - - - - - - - - - - -')
+        print(' Welcome to Tic-Tac-Toe!')
+        print('- - - - - - - - - - - - -')
+
+    # displays game results and winner if not scratch/draw.
+    def game_over(self, winner):
+        print('\n* * * * * * * * * * * * * *')
+        if winner == 'SCRATCH':
+            print(f'Game Over! It\'s a SCRATCH!!!')
+        else:
+            print(f'Game Over! {winner} WINS!!!')
+        print('* * * * * * * * * * * * * *')
+        print('\n')
+
+    # updated board printer
+    def print_board(self):
+        os.system('clear')
         print('+---+---+---+')
-        print(f'| {board[i]} | {board[i + 1]} | {board[i + 2]} |')
-    print('+---+---+---+')
+        for line in range(3):
+            # get each block in current line
+            block_0 = self.board[line][0]
+            block_1 = self.board[line][1]
+            block_2 = self.board[line][2]
+            # check if block is empty, if so display spot number for play
+            if block_0 == ' ':
+                block_0 = (line * 3) + 1
+            if block_1 == ' ':
+                block_1 = (line * 3) + 2
+            if block_2 == ' ':
+                block_2 = (line * 3) + 3
+            # print out the board
+            print(
+                f'| {block_0} | {block_1} | {block_2} |')
+            print('+---+---+---+')
+        print()
 
-
-def collect_player_names():
-    while True:
-        p1 = input('\nEnter name of Player 1: ')
-        if p1 == '':
-            print('Invalid player name. Please try again.')
-            continue
+    # check to see if the chosen position is valid
+    def is_valid(self, x, y):
+        if x < 0 or x > 2 or y < 0 or y > 2:
+            return False
+        elif self.board[x][y] != ' ':
+            return False
         else:
-            break
-    while True:
-        p2 = input('Enter name of Player 2: ')
-        if p2 == '':
-            print('Invalid player name. Please try again.')
-            continue
-        else:
-            break
-    return [(p2, 'O'), (p1, 'X')]
+            return True
 
+    def is_end(self):  # check to see if the game has been won/scratched
+        # vertical win
+        for column in range(3):
+            if (self.board[0][column] != ' ' and
+                self.board[0][column] == self.board[1][column] and
+                    self.board[1][column] == self.board[2][column]):
+                return self.board[0][column]
 
-def get_branches(board, player):
-    # get all possible plays for the current board and player
-    branches = []
-    for pos in range(9):
-        if board[pos] not in ['X', 'O']:
-            branches.append((pos, copy.deepcopy(board)))
-            branches[-1][1][pos] = player
-    return branches
+        # horizontal win
+        for line in range(3):
+            if (self.board[line] == ['X', 'X', 'X']):
+                return 'X'
+            elif (self.board[line] == ['O', 'O', 'O']):
+                return 'O'
 
+        # top-left to bottom-right diagonal win
+        if (self.board[0][0] != ' ' and
+            self.board[0][0] == self.board[1][1] and
+                self.board[0][0] == self.board[2][2]):
+            return self.board[0][0]
 
-def solve(board, player, score):
-    # play out the current board and calculate draw, wins, and losses
-    if check_for_win(board, 'X'):
-        score -= 10
-        return score
-    if check_for_win(board, 'O'):
-        score += 10
-        return score
+        # top-right to bottom-left  diagonal win
+        if (self.board[0][2] != ' ' and
+            self.board[0][2] == self.board[1][1] and
+                self.board[0][2] == self.board[2][0]):
+            return self.board[0][2]
 
-    # get all possible branches for current board
-    branches = get_branches(board, player)
+        # check if board if complete
+        for line in range(3):
+            for column in range(3):
+                if (self.board[line][column] == ' '):
+                    return None
 
-    # play out the entire board from passed board
-    for _, branch in branches:
-        if player == 'X':
-            return solve(branch, 'O', score)
-        else:
-            return solve(branch, 'X', score)
+        return ' '  # game is a scratch
 
-    # return the score for the played position
-    return score
+    def max(self):  # player 'O' is the computer player
+        max_value = -2
+        x = None
+        y = None
 
+        result = self.is_end()
 
-def ai_play(board, player):
-    scores = {}
-    branches = get_branches(board, player)
+        if result == 'X':
+            return (-1, 0, 0)  # loss
+        elif result == 'O':
+            return (1, 0, 0)  # win
+        elif result == ' ':
+            return (0, 0, 0)  # tie
 
-    # calculate win/loss score for each possible position
-    for branch in branches:
-        answer = solve(branch[1], 'O', 0)
-        # add position score to scores
-        scores[branch[0]] = answer
+        for row in range(3):
+            for column in range(3):
+                if self.board[row][column] == ' ':
+                    self.board[row][column] = 'O'
+                    (score, min_row, min_column) = self.min()
+                    if score > max_value:
+                        max_value = score
+                        x = row
+                        y = column
+                    self.board[row][column] = ' '
+        return (max_value, x, y)
 
-    # keep up with draw spots, win spots, and lose spots
-    spots_to_play = set()
-    winners = set()
-    losers = set()
+    def min(self):  # player 'X' is the human player
+        min_value = 2
+        x2 = None
+        y2 = None
 
-    # iterate through available positions
-    for k, v in scores.items():
-        # if the position matches the max update board
-        if v == max(scores.values()):
-            board[k] = 'O'
+        result = self.is_end()
 
-            # check to see if this is now a winning board
-            if check_for_win(board, 'O'):
-                winners.add(k)
+        if result == 'X':
+            return (-1, 0, 0)
+        elif result == 'O':
+            return (1, 0, 0)
+        elif result == ' ':
+            return (0, 0, 0)
 
-            # check to see if this position creates a win for opponent
-            lose_branches = get_branches(board, 'X')
-            for x_branch in lose_branches:
-                # if position does create loss, add it to losers
-                if check_for_win(x_branch[1], 'X'):
-                    losers.add(x_branch[0])
-                    break
-                # ...if now, add it draw spots
-                else:
-                    spots_to_play.add(k)
-                    board[k] = k
+        for row in range(3):
+            for column in range(3):
+                if self.board[row][column] == ' ':
+                    self.board[row][column] = 'X'
+                    (score, max_row, max_column) = self.max()
+                    if score < min_value:
+                        min_value = score
+                        x2 = row
+                        y2 = column
+                    self.board[row][column] = ' '
 
-        # reset board
-        board[k] = k
+        return (min_value, x2, y2)
 
-    # print statistics for AI suggestion
-    print('spots', spots_to_play)
-    print('winners', winners)
-    print('losers', losers)
+    def play(self):  # time to play the game
+        self.welcome_screen()
 
-    # suggest optimila play
-    if len(winners) > 0:
-        print(f'PLAY POSITION {list(winners)[0]}')
-    elif len(losers) > 0:
-        print(f'BLOCK POSITION {list(losers)[0]}')
-    else:
-        if 4 in spots_to_play:
-            print(f'BEST PLAY IS 4')
-        else:
-            print(f'BEST PLAY IS {min(spots_to_play)}')
+        while True:
+            # if human player 'X', show board
+            if self.player_turn == 'X':
+                self.print_board()
+            self.result = self.is_end()
 
-    return board
+            # if game is over display end screen
+            if self.result != None:
+                if self.result == 'X':
+                    self.game_over('X')
+                elif self.result == 'O':
+                    self.game_over('O')
+                elif self.result == ' ':
+                    self.game_over('SCRATCH')
 
+                self.start_game()
+                return
 
-def check_for_win(board, player):
-    if board[0] == player and board[1] == player and board[2] == player or \
-            board[3] == player and board[4] == player and board[5] == player or \
-            board[6] == player and board[7] == player and board[8] == player or \
-            board[0] == player and board[3] == player and board[6] == player or \
-            board[1] == player and board[4] == player and board[7] == player or \
-            board[2] == player and board[5] == player and board[8] == player or \
-            board[0] == player and board[4] == player and board[8] == player or \
-            board[2] == player and board[4] == player and board[6] == player:
-        return True
-    else:
-        return False
+            # if human player, ask for move
+            if self.player_turn == 'X':
 
+                while True:
+                    # ask for which spot they want to play
+                    choice = int(input(
+                        'Which position would you like to mark? (1-9): '))
 
-def guess(turn, player, board):
-    os.system('clear')
-    print_board(board)
+                    # convert chosen space to x, y coordinates
+                    x = int((choice - 1) / 3)
+                    y = int((choice - 1) % 3)
 
-    while True:
-        if player[1] == 'O':
-            ai_play(copy.deepcopy(board), 'O')
-        try:
-            # ask current player for their desired postion
-            choice = int(
-                input(f'\n{player[0]} ({player[1]}) which position would you like to mark? (0-8): '))
+                    (x2, y2) = (x, y)
 
-            # check for a valid input position
-            if choice < 0 or choice > 8:
-                print(f'Invalid choice. Please choose a position between 0 and 8...')
-                time.sleep(2)
-                continue
+                    if self.is_valid(x, y):
+                        self.board[x][y] = 'X'
+                        self.player_turn = 'O'
+                        break
+                    else:
+                        print('Your move is not valid! Try again.')
 
-            # check to see if the position has already been played
-            elif board[choice] == 'X' or board[choice] == 'O':
-                print(
-                    f'Sorry position {str(choice)} has already been played. Try again.')
-                time.sleep(2)
-                continue
-
+            # if it's the cpu's 'O' turn
             else:
-                return choice
-
-        # exit on ctrl+c
-        except KeyboardInterrupt:
-            raise
-
-        # input was not a valid number
-        except:
-            print('\nInvalid choice. Please choose a position between 0 and 8...')
-            time.sleep(2)
-            continue
+                (score, x, y) = self.max()
+                self.board[x][y] = 'O'
+                self.player_turn = 'X'
 
 
 def main():
-    board = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-
-    # welcome screen
-    welcome_screen()
-
-    # collect player names
-    players = collect_player_names()
-    print(f'\n{players[1][0]} (X) vs. {players[0][0]} (O)')
-    input('\nPress any key to begin!')
-
-    turn = 0
-
-    # start game
-    while True:
-        turn += 1
-
-        # calculate the current player
-        player = players[turn % 2]
-
-        # prompt the current player for their next move
-        choice = guess(turn, player, board)
-
-        board[choice] = player[1]
-
-        # check to see if the current player has won or if scratch game
-        if check_for_win(board, player[1]) is True:
-            os.system('clear')
-            print('\n* * * * * * * * * * * * * *')
-            print(f'Game Over! {player[0].upper()} WINS!!!')
-            print('* * * * * * * * * * * * * *')
-            print_board(board)
-            print('\n')
-            break
-        elif turn == 9:
-            print('Scratch... Game Over!')
-            break
-
-        print(f'YOUR CHOICE WAS {choice}')
+    g = Game()
+    g.play()
 
 
-# run main program
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
