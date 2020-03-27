@@ -20,14 +20,43 @@ class Game:
         print(' Welcome to Tic-Tac-Toe!')
         print('- - - - - - - - - - - - -')
 
+        # ask HUMAN what they would like to play as... X or O?
+        # set CPU player to opposite
+        player_choice = ''
+
+        while True:
+            try:
+                player_choice = input(
+                    'Would you like to play as X or O (X goes first): ')
+                if player_choice in ['X', 'x', 'O', 'o']:
+                    self.player_choice = player_choice.upper()
+                    if player_choice.upper() == 'X':
+                        self.cpu_choice = 'O'
+                    else:
+                        self.cpu_choice = 'X'
+                    break
+                else:
+                    raise Exception
+            except KeyboardInterrupt:
+                print('\n\nLATER GATOR!\n')
+                exit()
+            except:
+                print('\nInvalid entry! Please enter either X or O.\n')
+
     # displays game results and winner if not scratch/draw.
     def game_over(self, winner):
-        print('\n* * * * * * * * * * * * * *')
-        if winner == 'SCRATCH':
-            print(f'Game Over! It\'s a SCRATCH!!!')
+
+        if winner == self.player_choice:
+            result = 'YOU WIN!!! You got lucky!'
         else:
-            print(f'Game Over! {winner} WINS!!!')
-        print('* * * * * * * * * * * * * *')
+            result = 'HA, HA! I BEAT YOU!!! Better luck next time...'
+
+        print('\n* * * * * * * * * * * * * * * * * * * * * * * * * * * *')
+        if winner == 'SCRATCH':
+            print(f"Game Over! It's a SCRATCH!!! Let's play again?")
+        else:
+            print(f'Game Over! {result}')
+        print('* * * * * * * * * * * * * * * * * * * * * * * * * * * *')
         print('\n')
 
     # updated board printer
@@ -153,9 +182,26 @@ class Game:
         self.welcome_screen()
 
         while True:
-            # if human player 'X', show board
-            if self.player_turn == 'X':
+
+            # if CPU goes first print update while minimax works
+            if self.cpu_choice == 'X':
+                os.system('clear')
+                print("\nI'm thinking...")
+
+            # if human player, show board
+            if self.player_turn == self.player_choice:
                 self.print_board()
+
+                # print CPU player move if not new game
+                if self.board != [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]:
+                    pl = 0
+                    for x_pl in range(3):
+                        for y_pl in range(3):
+                            pl += 1
+                            if x == x_pl and y == y_pl:
+                                computer_move = pl
+                    print(f'Computer played position {computer_move}...\n')
+
             self.result = self.is_end()
 
             # if game is over display end screen
@@ -171,41 +217,44 @@ class Game:
                 return
 
             # if human player, ask for move
-            if self.player_turn == 'X':
+            if self.player_turn == self.player_choice:
 
                 while True:
-                    # print computer player move if not new game
-                    if self.board != [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]:
-                        pl = 0
-                        for x_pl in range(3):
-                            for y_pl in range(3):
-                                pl += 1
-                                if x == x_pl and y == y_pl:
-                                    computer_move = pl
-                        print(f'Computer played position {computer_move}...\n')
 
                     # ask for which spot they want to play
-                    choice = int(input(
-                        'Which position would you like to mark? (1-9): '))
+                    try:
+                        choice = int(input(
+                            'Which position would you like to mark? (1-9): '))
 
-                    # convert chosen space to x, y coordinates
-                    x = int((choice - 1) / 3)
-                    y = int((choice - 1) % 3)
+                        # convert chosen space to x, y coordinates
+                        x = int((choice - 1) / 3)
+                        y = int((choice - 1) % 3)
 
-                    (x2, y2) = (x, y)
+                        (x2, y2) = (x, y)
 
-                    if self.is_valid(x, y):
-                        self.board[x][y] = 'X'
-                        self.player_turn = 'O'
+                        if self.is_valid(x, y):
+                            self.board[x][y] = self.player_choice
+                            self.player_turn = self.cpu_choice
+                            break
+                        else:
+                            raise Exception
                         break
-                    else:
-                        print('Your move is not valid! Try again.')
+                    except KeyboardInterrupt:
+                        print('\n\nLATER GATOR!\n')
+                        exit()
+                    except:
+                        print('\nYour move is not valid! Try again.\n')
 
             # if it's the cpu's 'O' turn
             else:
-                (score, x, y) = self.max()
-                self.board[x][y] = 'O'
-                self.player_turn = 'X'
+                if self.cpu_choice == 'O':
+                    (score, x, y) = self.max()
+                    self.board[x][y] = 'O'
+                    self.player_turn = 'X'
+                else:
+                    (score, x, y) = self.min()
+                    self.board[x][y] = 'X'
+                    self.player_turn = 'O'
 
 
 def main():
