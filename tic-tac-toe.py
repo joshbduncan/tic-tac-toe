@@ -20,7 +20,7 @@ class Game:
         print(' Welcome to Tic-Tac-Toe!')
         print('- - - - - - - - - - - - -')
 
-        # ask HUMAN what they would like to play as... 'X' or 'O'?
+        # ask HUMAN what they would like to play as... X or O?
         # set CPU player to opposite
         player_choice = ''
 
@@ -49,14 +49,14 @@ class Game:
         if winner == self.player_choice:
             result = 'YOU WIN!!! You got lucky!'
         else:
-            result = 'I BEAT YOU!!! Better luck next time.'
+            result = 'HA, HA! I BEAT YOU!!! Better luck next time...'
 
-        print('\n* * * * * * * * * * * * * * * * * *')
+        print('\n* * * * * * * * * * * * * * * * * * * * * * * * * * * *')
         if winner == 'SCRATCH':
-            print(f"It's a SCRATCH!!! Let's play again?")
+            print(f"Game Over! It's a SCRATCH!!! Let's play again?")
         else:
             print(f'Game Over! {result}')
-        print('* * * * * * * * * * * * * * * * * *')
+        print('* * * * * * * * * * * * * * * * * * * * * * * * * * * *')
         print('\n')
 
     # updated board printer
@@ -90,8 +90,7 @@ class Game:
         else:
             return True
 
-    # check to see if the game has been won/scratched
-    def is_end(self):
+    def is_end(self):  # check to see if the game has been won/scratched
         # vertical win
         for column in range(3):
             if (self.board[0][column] != ' ' and
@@ -118,7 +117,7 @@ class Game:
                 self.board[0][2] == self.board[2][0]):
             return self.board[0][2]
 
-        # check if board is complete
+        # check if board if complete
         for line in range(3):
             for column in range(3):
                 if (self.board[line][column] == ' '):
@@ -126,8 +125,7 @@ class Game:
 
         return ' '  # game is a scratch
 
-    # minimax MAX for the 'O' player
-    def max(self):
+    def max(self):  # player 'O' is the computer player
         max_value = -2
         x = None
         y = None
@@ -153,8 +151,7 @@ class Game:
                     self.board[row][column] = ' '
         return (max_value, x, y)
 
-    # minimax MIN for the 'X' player
-    def min(self):
+    def min(self):  # player 'X' is the human player
         min_value = 2
         x2 = None
         y2 = None
@@ -181,8 +178,7 @@ class Game:
 
         return (min_value, x2, y2)
 
-    # time to play the game
-    def play(self):
+    def play(self):  # time to play the game
         self.welcome_screen()
 
         while True:
@@ -192,7 +188,7 @@ class Game:
                 os.system('clear')
                 print("\nI'm thinking...")
 
-            # if HUMAN player, show board
+            # if human player, show board
             if self.player_turn == self.player_choice:
                 self.print_board()
 
@@ -203,8 +199,8 @@ class Game:
                         for y_pl in range(3):
                             pl += 1
                             if x == x_pl and y == y_pl:
-                                cpu_move = pl
-                    print(f'I played position {cpu_move}...\n')
+                                computer_move = pl
+                    print(f'Computer played position {computer_move}...\n')
 
             self.result = self.is_end()
 
@@ -220,7 +216,7 @@ class Game:
                 self.start_game()
                 return
 
-            # if HUMAN player, ask for move
+            # if human player, ask for move
             if self.player_turn == self.player_choice:
 
                 while True:
@@ -249,7 +245,7 @@ class Game:
                     except:
                         print('\nYour move is not valid! Try again.\n')
 
-            # if it's the cpu's turn calculate minimax
+            # if it's the cpu's 'O' turn
             else:
                 if self.cpu_choice == 'O':
                     (score, x, y) = self.max()
