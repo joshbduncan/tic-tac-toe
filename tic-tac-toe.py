@@ -174,6 +174,16 @@ class Game:
             if self.player_turn == 'X':
 
                 while True:
+                    # print computer player move if not new game
+                    if self.board != [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]:
+                        pl = 0
+                        for x_pl in range(3):
+                            for y_pl in range(3):
+                                pl += 1
+                                if x == x_pl and y == y_pl:
+                                    computer_move = pl
+                        print(f'Computer played position {computer_move}...\n')
+
                     # ask for which spot they want to play
                     choice = int(input(
                         'Which position would you like to mark? (1-9): '))
